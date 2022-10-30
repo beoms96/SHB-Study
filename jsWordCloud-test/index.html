@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jQCloud Example</title>
+    <link rel="stylesheet" type="text/css" href="jqcloud.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+      integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.3/jqcloud-1.0.3.min.js"
+    ></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/v8/js/anychart-tag-cloud.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js"
+      integrity="sha512-MefNfAGJ/pEy89xLOFs3V6pYPs6AmUhXJrRlydI/9wZuGrqxmrdQ80zKHUcyadAcpH67teDZcBeS6oMJLPtTqw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+    <script type="text/javascript">
+      const jqcloud_word_array = [
+        {
+          text: "가나다",
+          weight: 500,
+          html: { "data-tooltip-text": `${"가나다"} is ${"500"}` },
+        },
+        { text: "나다라", weight: 400 },
+        { text: "다라마", weight: 300 },
+        { text: "라마바", weight: 200 },
+        { text: "마바사", weight: 100 },
+      ];
+
+      const anychart_word_array = [
+        { x: "가나다", value: 500 },
+        { x: "나다라", value: 400 },
+        { x: "다라마", value: 300 },
+        { x: "라마바", value: 200 },
+        { x: "마바사", value: 100 },
+      ];
+
+      const d3Cloud_word_array = [
+        "가나다",
+        "나다라",
+        "다라마",
+        "라마바",
+        "마바사",
+      ];
+    </script>
+  </head>
+  <body>
+    <div id="jqCloud-example" style="width: 550px; height: 350px"></div>
+    <script type="text/javascript">
+      $(function () {
+        // When DOM is ready, select the container element and call the jQCloud method, passing the array of words as the first argument.
+        $("#jqCloud-example").jQCloud(jqcloud_word_array);
+      });
+    </script>
+    <div id="anychart-example" style="width: 550px; height: 350px"></div>
+    <script type="text/javascript">
+      let chart = anychart.tagCloud(anychart_word_array);
+      chart.angles([0]);
+      chart.container("anychart-example");
+      chart.draw();
+    </script>
+    <script>
+      const draw = (words) => {
+        d3.select("body")
+          .append("svg")
+          .attr("width", layout.size()[0])
+          .attr("height", layout.size()[1])
+          .append("g")
+          .attr(
+            "transform",
+            "translate(" +
+              layout.size()[0] / 2 +
+              "," +
+              layout.size()[1] / 2 +
+              ")"
+          )
+          .selectAll("text")
+          .data(words)
+          .enter()
+          .append("text")
+          .style("font-size", (d) => {
+            return d.size + "px";
+          })
+          .style("font-family", "Impact")
+          .attr("text-anchor", "middle")
+          .attr("transform", (d) => {
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+          })
+          .text((d) => {
+            return d.text;
+          });
+      };
+
+      const layout = d3.layout
+        .cloud()
+        .size([500, 500])
+        .words(
+          d3Cloud_word_array.map((d) => {
+            return { text: d, size: 10 + Math.random() * 90, test: "haha" };
+          })
+        )
+        .padding(5)
+        /*.rotate(() => {
+          return ~~(Math.random() * 2) * 90;
+        })*/
+        .font("Impact")
+        .fontSize((d) => {
+          return d.size;
+        })
+        .on("end", draw);
+
+      layout.start();
+    </script>
+  </body>
+</html>
